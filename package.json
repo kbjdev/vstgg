@@ -1,15 +1,23 @@
 {
   "name": "vstgg",
-  "productName": "vstgg",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "productName": "VST Git",
+  "version": "0.1.0-alpha.0",
+  "license": "MIT",
+  "description": "Visual Studio Code Theme Git Gui Client",
   "main": ".vite/build/main.js",
+  "config": {
+    "forge": "config/forge.config.ts"
+  },
   "scripts": {
-    "start": "electron-forge start",
+    "dev": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "publish": "electron-forge publish"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.4.0",
@@ -21,24 +29,21 @@
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron-forge/plugin-vite": "^7.4.0",
     "@electron/fuses": "^1.8.0",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
+    "@rushstack/eslint-config": "^3.7.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react-swc": "^3.7.0",
     "electron": "31.2.1",
     "eslint": "^8.0.1",
-    "eslint-plugin-import": "^2.25.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.9.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.9",
     "prettier": "^3.3.3",
     "ts-node": "^10.0.0",
-    "typescript": "~4.5.4",
+    "typescript": "5.3.2",
     "vite": "^5.0.12"
-  },
-  "keywords": [],
-  "author": {
-    "name": "qudwnbj",
-    "email": "walpnv@gmail.com"
-  },
-  "license": "MIT",
-  "dependencies": {
-    "electron-squirrel-startup": "^1.0.1"
   },
   "engines": {
     "node": "20.15.1",

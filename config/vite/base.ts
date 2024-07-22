@@ -1,37 +1,36 @@
 import { builtinModules } from 'node:module';
-import type { AddressInfo } from 'node:net';
+import { resolve } from 'node:path';
+import pkg from '../../package.json';
+
 import type { ConfigEnv, Plugin, UserConfig } from 'vite';
-import pkg from './package.json';
 
 export const builtins = ['electron', ...builtinModules.map((m) => [m, `node:${m}`]).flat()];
 
 export const external = [
   ...builtins,
-  ...Object.keys('dependencies' in pkg ? (pkg.dependencies as Record<string, unknown>) : {}),
+  ...Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
 ];
 
-export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
+export function getBuildConfig(env: ConfigEnv<'build'>) {
   const { root, mode, command } = env;
 
-  return {
+  const config: UserConfig = {
     root,
     mode,
     build: {
-      // Prevent multiple builds from interfering with each other.
       emptyOutDir: false,
-      // 🚧 Multiple builds may conflict.
       outDir: '.vite/build',
       watch: command === 'serve' ? {} : null,
       minify: command === 'build',
     },
     clearScreen: false,
   };
+
+  return config;
 }
 
 export function getDefineKeys(names: string[]) {
-  const define: { [name: string]: VitePluginRuntimeKeys } = {};
-
-  return names.reduce((acc, name) => {
+  return names.reduce<{ [name: string]: VitePluginRuntimeKeys }>((acc, name) => {
     const NAME = name.toUpperCase();
     const keys: VitePluginRuntimeKeys = {
       VITE_DEV_SERVER_URL: `${NAME}_VITE_DEV_SERVER_URL`,
@@ -39,14 +38,17 @@ export function getDefineKeys(names: string[]) {
     };
 
     return { ...acc, [name]: keys };
-  }, define);
+  }, {});
 }
 
 export function getBuildDefine(env: ConfigEnv<'build'>) {
   const { command, forgeConfig } = env;
-  const names = forgeConfig.renderer.filter(({ name }) => name != null).map(({ name }) => name!);
+  const names = forgeConfig.renderer.reduce<string[]>(
+    (acc, { name }) => (typeof name === 'string' ? [...acc, name] : acc),
+    []
+  );
   const defineKeys = getDefineKeys(names);
-  const define = Object.entries(defineKeys).reduce(
+  const define = Object.entries(defineKeys).reduce<Record<string, string | undefined>>(
     (acc, [name, keys]) => {
       const { VITE_DEV_SERVER_URL, VITE_NAME } = keys;
       const def = {
@@ -56,7 +58,7 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
       };
       return { ...acc, ...def };
     },
-    {} as Record<string, any>
+    {}
   );
 
   return define;
@@ -65,20 +67,22 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
 export function pluginExposeRenderer(name: string): Plugin {
   const { VITE_DEV_SERVER_URL } = getDefineKeys([name])[name];
 
-  return {
+  const plugin: Plugin = {
     name: '@electron-forge/plugin-vite:expose-renderer',
     configureServer(server) {
       process.viteDevServers ??= {};
-      // Expose server for preload scripts hot reload.
       process.viteDevServers[name] = server;
 
       server.httpServer?.once('listening', () => {
-        const addressInfo = server.httpServer!.address() as AddressInfo;
-        // Expose env constant for main process use.
-        process.env[VITE_DEV_SERVER_URL] = `http://localhost:${addressInfo?.port}`;
+        if (!server.httpServer) return;
+        const addressInfo = server.httpServer.address();
+        if (!addressInfo || typeof addressInfo !== 'object') return;
+        process.env[VITE_DEV_SERVER_URL] = `http://localhost:${addressInfo.port}`;
       });
     },
   };
+
+  return plugin;
 }
 
 export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
@@ -87,14 +91,13 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
     closeBundle() {
       if (command === 'reload') {
         for (const server of Object.values(process.viteDevServers)) {
-          // Preload scripts hot reload.
           server.ws.send({ type: 'full-reload' });
         }
       } else {
-        // Main process hot restart.
-        // https://github.com/electron/forge/blob/v7.2.0/packages/api/core/src/api/start.ts#L216-L223
         process.stdin.emit('data', 'rs');
       }
     },
   };
 }
+
+export const resolveAlias = [{ find: '@src', replacement: resolve(__dirname, 'src') }];
