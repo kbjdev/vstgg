@@ -4,30 +4,39 @@ import ChevronDownIcon from '@resources/icons/chevron-down.svg?react';
 
 const Wrapper = styled.div`
   display: flex;
-  height: 16px;
+  height: 28px;
+  border: 1px solid ${({ theme }) => theme.colors['button.border']};
 `;
 
 const BaseButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100%;
-  background-color: ${({ theme }) => theme.colors['extensionButton.background']};
+  background-color: ${({ theme }) => theme.colors['button.background']};
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors['extensionButton.hoverBackground']};
+    background-color: ${({ theme }) => theme.colors['button.hoverBackground']};
+  }
+
+  & > svg {
+    width: 16px;
+    height: 16px;
+    color: ${({ theme }) => theme.colors['button.foreground']};
   }
 `;
 
-const Button = styled(BaseButton)<{ $hasDropdown: boolean }>`
-  display: flex;
-  align-items: center;
+const MainButton = styled(BaseButton)<{ $hasDropdown: boolean }>`
   padding: 0 5px;
+  flex: 1;
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
 
   border-top-right-radius: ${({ $hasDropdown }) => ($hasDropdown ? 'none' : '2px')};
   border-bottom-right-radius: ${({ $hasDropdown }) => ($hasDropdown ? 'none' : '2px')};
 
-  font-size: 11px;
-  color: ${({ theme }) => theme.colors['extensionButton.prominentForeground']};
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors['button.foreground']};
 `;
 
 const Separator = styled.div`
@@ -35,39 +44,31 @@ const Separator = styled.div`
   align-items: center;
   width: 1px;
   height: 100%;
-  background-color: ${({ theme }) => theme.colors['extensionButton.background']};
+  padding: 4px 0;
+  background-color: ${({ theme }) => theme.colors['button.background']};
   & > div {
     width: 100%;
-    height: 10px;
-    background-color: ${({ theme }) => theme.colors['extensionButton.separator']};
+    height: 100%;
+    background-color: ${({ theme }) => theme.colors['button.separator']};
   }
 `;
 
 const DropdownButton = styled(BaseButton)`
-  width: 16px;
+  width: 25px;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
-
-  & > svg {
-    width: 100%;
-    height: 100%;
-    color: ${({ theme }) => theme.colors['extensionButton.prominentForeground']};
-  }
+  padding: 0 4px;
 `;
 
-interface IExtensionButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
+interface IButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
   onDropdownClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
-const ExtensionButton: FC<PropsWithChildren<IExtensionButtonProps>> = ({
-  children,
-  onDropdownClick,
-  ...props
-}) => (
+const Button: FC<PropsWithChildren<IButtonProps>> = ({ children, onDropdownClick, ...props }) => (
   <Wrapper>
-    <Button type="button" $hasDropdown={!!onDropdownClick} {...props}>
+    <MainButton type="button" $hasDropdown={!!onDropdownClick} {...props}>
       {children}
-    </Button>
+    </MainButton>
     {!!onDropdownClick && (
       <>
         <Separator>
@@ -81,4 +82,4 @@ const ExtensionButton: FC<PropsWithChildren<IExtensionButtonProps>> = ({
   </Wrapper>
 );
 
-export default ExtensionButton;
+export default Button;

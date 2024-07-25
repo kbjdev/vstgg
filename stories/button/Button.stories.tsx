@@ -1,11 +1,12 @@
-import ExtensionButton from '@src/renderer/components/vs/button/ExtensionButton';
+import Button from '@src/renderer/components/vs/button/Button';
 import { Meta, StoryObj } from '@storybook/react/*';
+import CheckIcon from '@resources/icons/check.svg?react';
 import StoryComponentFrame from '../ComponentFrame';
 
-type Story = StoryObj<typeof ExtensionButton>;
+type Story = StoryObj<typeof Button>;
 
-const meta: Meta<typeof ExtensionButton> = {
-  title: 'button/ExtensionButton',
+const meta: Meta<typeof Button> = {
+  title: 'button/Button',
   tags: ['autodocs'],
   argTypes: {
     onDropdownClick: {
@@ -17,21 +18,22 @@ const meta: Meta<typeof ExtensionButton> = {
 
 export const Default: Story = {
   render: () => (
-    <StoryComponentFrame>
-      <ExtensionButton onClick={() => alert('Extension button clicked!')}>Install</ExtensionButton>
+    <StoryComponentFrame width={300}>
+      <Button onClick={() => alert('Button clicked!')}>Run and Debug</Button>
     </StoryComponentFrame>
   ),
 };
 
 export const WithDropdown: Story = {
   render: () => (
-    <StoryComponentFrame>
-      <ExtensionButton
-        onClick={() => alert('Extension button clicked!')}
+    <StoryComponentFrame width={300}>
+      <Button
+        onClick={() => alert('Button clicked!')}
         onDropdownClick={() => alert('Dropdown button clicked!')}
       >
-        Install
-      </ExtensionButton>
+        <CheckIcon style={{ margin: '0 3.2px' }} />
+        Commit
+      </Button>
     </StoryComponentFrame>
   ),
 };

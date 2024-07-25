@@ -1,6 +1,7 @@
 import { withThemeFromJSXProvider } from '@storybook/addon-themes';
 import { ThemeProvider } from 'styled-components';
 import darkThemeJson from '@resources/themes/theme-defaults/dark_vs.json';
+import lightThemeJson from '@resources/themes/theme-defaults/light_vs.json';
 import GlobalStyles from '@src/renderer/components/styles/GlobalStyles';
 import ColorCollection from '@src/renderer/libs/vs/theme/colorCollection';
 
@@ -12,11 +13,9 @@ const dark = {
 
 const light = {
   colors: new ColorCollection()
-    .registerThemeColor(darkThemeJson.colors)
+    .registerThemeColor(lightThemeJson.colors)
     .genrateThemeColors('light'),
 };
-
-console.log(dark);
 
 const preview: Preview = {
   parameters: {
