@@ -1,30 +1,40 @@
 import ExtensionButton from '@src/renderer/components/vs/button/ExtensionButton';
 import { Meta, StoryObj } from '@storybook/react/*';
 import { fn } from '@storybook/test';
+import StoryComponentFrame from '../ComponentFrame';
 
 type Story = StoryObj<typeof ExtensionButton>;
 
 const meta: Meta<typeof ExtensionButton> = {
-  component: ExtensionButton,
   title: 'button/ExtensionButton',
   tags: ['autodocs'],
   argTypes: {
-    children: { control: 'text' },
-    onDropdownClick: { control: 'boolean' },
+    onDropdownClick: {
+      type: 'MouseEventHandler<HTMLButtonElement>' as any,
+      table: { defaultValue: { summary: 'undefined' } },
+    },
   },
 };
 
 export const Default: Story = {
-  args: {
-    children: 'Install',
-  },
+  render: () => (
+    <StoryComponentFrame>
+      <ExtensionButton onClick={() => alert('Extension button clicked!')}>Install</ExtensionButton>
+    </StoryComponentFrame>
+  ),
 };
 
 export const WithDropdown: Story = {
-  args: {
-    children: 'Install',
-    onDropdownClick: fn(),
-  },
+  render: () => (
+    <StoryComponentFrame>
+      <ExtensionButton
+        onClick={() => alert('Extension button clicked!')}
+        onDropdownClick={() => alert('Dropdown button clicked!')}
+      >
+        Install
+      </ExtensionButton>
+    </StoryComponentFrame>
+  ),
 };
 
 export default meta;

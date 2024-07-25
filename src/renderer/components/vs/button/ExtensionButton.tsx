@@ -73,7 +73,7 @@ const ExtensionButton: FC<PropsWithChildren<IExtensionButtonProps>> = ({
         <Separator>
           <div></div>
         </Separator>
-        <DropdownButton>
+        <DropdownButton onClick={onDropdownClick}>
           <ChevronDownIcon />
         </DropdownButton>
       </>
