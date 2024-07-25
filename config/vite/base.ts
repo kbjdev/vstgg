@@ -100,4 +100,7 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
   };
 }
 
-export const resolveAlias = [{ find: '@src', replacement: resolve(__dirname, 'src') }];
+export const resolveAlias = [
+  { find: '@src', replacement: resolve(__dirname, '../../src') },
+  { find: '@resources', replacement: resolve(__dirname, '../../resources') },
+];

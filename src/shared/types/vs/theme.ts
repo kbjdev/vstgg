@@ -2,6 +2,7 @@ export type ColorScheme = 'light' | 'dark' | 'hcDark' | 'hcLight';
 
 export interface IVSCTheme {
   name: string;
+  include?: string;
   type: ColorScheme;
   /**
    * @see https://code.visualstudio.com/api/references/theme-color

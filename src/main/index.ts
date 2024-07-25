@@ -9,8 +9,10 @@ if (require('electron-squirrel-startup')) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
+    x: 192,
+    y: 1080,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -23,6 +25,7 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
 
+  mainWindow.maximize();
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 };

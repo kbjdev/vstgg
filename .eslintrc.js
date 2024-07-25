@@ -50,6 +50,7 @@ const eslintConfig = {
         alphabetize: { order: 'asc' },
         pathGroups: [
           { pattern: '@src/**', group: 'internal' },
+          { pattern: '@resources/**', group: 'internal' },
           { pattern: 'react', group: 'external', position: 'before' },
         ],
         pathGroupsExcludedImportTypes: ['react'],
@@ -66,6 +67,32 @@ const eslintConfig = {
         },
       },
       plugins: ['react', 'react-refresh', 'jsx-a11y'],
+      extends: [
+        'plugin:react/recommended',
+        'plugin:react-hooks/recommended',
+        'plugin:react/jsx-runtime',
+      ],
+      rules: {
+        'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+        'react/no-unknown-property': 'off',
+        'react/react-in-jsx-scope': 'off',
+        'react/prop-types': 'off',
+        'react/jsx-no-target-blank': 'off',
+        'jsx-a11y/aria-props': 'warn',
+        'jsx-a11y/aria-proptypes': 'warn',
+        'jsx-a11y/aria-unsupported-elements': 'warn',
+        'jsx-a11y/role-has-required-aria-props': 'warn',
+        'jsx-a11y/role-supports-aria-props': 'warn',
+      },
+    },
+    {
+      files: ['stories/**/*.stories.ts?(x)'],
+      settings: {
+        react: {
+          version: '18.3.1',
+        },
+      },
+      plugins: ['react', 'react-refresh', 'jsx-a11y', 'plugin:storybook/recommended'],
       extends: [
         'plugin:react/recommended',
         'plugin:react-hooks/recommended',
