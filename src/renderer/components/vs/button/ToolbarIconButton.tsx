@@ -7,6 +7,7 @@ const Button = styled.button`
   padding: 0 3px;
   height: 22px;
   border-radius: 4px;
+  cursor: pointer;
 
   color: ${({ theme }) => theme.colors['icon.foreground']};
   font-size: 11px;

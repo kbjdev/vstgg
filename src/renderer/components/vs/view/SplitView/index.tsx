@@ -1,48 +1,57 @@
-import { Children, FC, PropsWithChildren, useEffect, useRef, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Children, FC, PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import SplitViewControl from '@src/renderer/libs/view/splitViewControl';
+import SplitViewCollection, {
+  ISplitViewCollectionOptions,
+} from '@src/renderer/libs/view/splitViewCollection';
 import SplitViewItem from './SplitViewItem';
 
 const Container = styled.div`
+  position: relative;
   width: 100%;
   height: 100%;
 `;
 
-interface ISplitViewProps {}
+interface ISplitViewProps {
+  views: ISplitViewCollectionOptions['views'];
+  direction?: ISplitViewCollectionOptions['direction'];
+}
 
-const SplitView: FC<PropsWithChildren<ISplitViewProps>> = ({ children }) => {
+const SplitView: FC<PropsWithChildren<ISplitViewProps>> = ({
+  children,
+  direction = 'horizontal',
+  views,
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [control, setControl] = useState<SplitViewControl>();
+  const [control, setControl] = useState<SplitViewCollection>();
+
+  const minSize = useMemo(
+    () => views.reduce((total, view) => (view.visible ? total + view.minSize : total), 0),
+    []
+  );
 
   useEffect(() => {
-    const splitViewControl = new SplitViewControl({
+    const splitViewCollection = new SplitViewCollection({
       container: containerRef.current,
-      views: [
-        { minSize: 35, size: 35, visible: true },
-        {
-          minSize: 100,
-          size: 220,
-          visible: true,
-        },
-        {
-          minSize: 100,
-          size: 110,
-          visible: true,
-        },
-        { minSize: 22, size: 22, visible: true },
-      ],
-      direction: 'vertical',
+      views,
+      direction,
     });
 
-    setControl(splitViewControl);
+    setControl(splitViewCollection);
 
     return () => {
-      splitViewControl.destroy();
+      splitViewCollection.destroy();
     };
   }, []);
 
   return (
-    <Container ref={containerRef}>
+    <Container
+      ref={containerRef}
+      style={{
+        minWidth: direction === 'horizontal' ? 'auto' : minSize,
+        minHeight: direction === 'horizontal' ? minSize : 'auto',
+      }}
+    >
       {control
         ? Children.map(children, (child, index) => (
             <SplitViewItem control={control.getViewControl(index)}>{child}</SplitViewItem>

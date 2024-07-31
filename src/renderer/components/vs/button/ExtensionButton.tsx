@@ -10,6 +10,7 @@ const Wrapper = styled.div`
 const BaseButton = styled.button`
   height: 100%;
   background-color: ${({ theme }) => theme.colors['extensionButton.background']};
+  cursor: pointer;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors['extensionButton.hoverBackground']};

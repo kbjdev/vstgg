@@ -1,135 +1,106 @@
-import ViewControl from './viewControl';
-
-interface IView {
-  minSize: number;
-  size: number;
-  visible: boolean;
-}
+import { motionValue, MotionValue } from 'framer-motion';
 
 interface ISplitViewControlOptions {
-  container: HTMLElement | null;
-  views: IView[];
+  position: number;
+  size: number;
+  minSize: number;
+  minPosition: number;
+  maxPosition: number;
+  visible: boolean;
+  isLastView: boolean;
   direction: 'horizontal' | 'vertical';
+  resizeHandler: (event: MouseEvent) => void;
 }
 
 class SplitViewControl {
-  private readonly _container: HTMLElement;
-  private _views: ViewControl[];
+  private _position: MotionValue<number>;
+  private _size: MotionValue<number>;
+  private _sashCursor: MotionValue<string>;
+  private _visible: boolean;
+  private _cachedSize?: number;
   private _direction: 'horizontal' | 'vertical';
-  private _containerResizeObserver: ResizeObserver;
+  private _resizeHandler: (event: MouseEvent) => void;
+  private _isLastView: boolean;
+  public readonly minSize: number;
   public constructor(options: ISplitViewControlOptions) {
-    if (!options.container) throw new Error('SplitViewControlError: Container is not defined');
-    this._container = options.container;
+    this._position = motionValue(options.position);
+    this._size = motionValue(options.size);
+    this._visible = options.visible;
+    this._cachedSize = options.size;
     this._direction = options.direction;
-    const viewOptions = this._readjustSize(options.views, options.container);
-    const positions = this._readjustPosition(viewOptions);
+    this._resizeHandler = options.resizeHandler;
+    this._isLastView = options.isLastView;
+    this.minSize = options.minSize;
+    this._sashCursor = motionValue(this._getSashCursor(options.minPosition, options.maxPosition));
 
-    this._views = viewOptions.map((viewOption, index) => {
-      const resizable = index !== viewOptions.length - 1;
-
-      return new ViewControl({
-        position: positions[index],
-        size: viewOption.size,
-        visible: viewOption.visible,
-        direction: options.direction,
-        minSize: viewOption.minSize,
-        resizable,
-      });
+    this._position.on('change', () => {
+      this._sashCursor.set(this._getSashCursor(options.minPosition, options.maxPosition));
     });
 
-    this._containerResizeObserver = new ResizeObserver(([entry]) => {
-      const views = this._getViews(this._views);
-      const readjustedViews = this._readjustSize(views, entry.target as HTMLElement);
-      const readjustedPositions = this._readjustPosition(readjustedViews);
-
-      this._views.forEach((view, index) => {
-        view.size.set(readjustedViews[index].size);
-        view.position.set(readjustedPositions[index]);
-        view.saveCachedSize();
-      });
+    this._size.on('change', () => {
+      this._sashCursor.set(this._getSashCursor(options.minPosition, options.maxPosition));
     });
-
-    this._containerResizeObserver.observe(this._container);
   }
 
-  public getViewControl(index: number) {
-    return this._views[index];
-  }
+  private _getSashCursor(minPosition: number, maxPosition: number) {
+    // TODO CAN'T TRUST
+    const toTrustNumber = (num: number) => {
+      return Math.floor(num * Math.pow(10, 2)) / Math.pow(10, 2);
+    };
+    const position = toTrustNumber(this._position.get());
+    const size = toTrustNumber(this._size.get());
 
-  private _getViews(views: ViewControl[]) {
-    return views.map((view) => ({
-      minSize: view.minSize,
-      size: view.size.get(),
-      visible: view.visible,
-    }));
-  }
-
-  private _readjustSize(views: IView[], container: HTMLElement): IView[] {
-    const containerSize =
-      this._direction === 'vertical' ? container.offsetWidth : container.offsetHeight;
-
-    const { total, totalWithoutMinSize } = views.reduce(
-      (size, view) => ({
-        total: view.visible ? size.total + view.size : size.total,
-        totalWithoutMinSize:
-          view.visible && view.size > view.minSize
-            ? size.totalWithoutMinSize + view.size
-            : size.totalWithoutMinSize,
-      }),
-      { total: 0, totalWithoutMinSize: 0 }
-    );
-
-    if (total > containerSize) {
-      views.forEach((view) => {
-        if (!view.visible) return;
-        const ratioSize =
-          view.size * ((containerSize - (total - totalWithoutMinSize)) / totalWithoutMinSize);
-        view.size = ratioSize < view.minSize ? view.minSize : ratioSize;
-      });
-
-      return this._readjustSize(views, container);
+    if (position + size === minPosition + this.minSize) {
+      return this._direction === 'horizontal' ? 's-resize' : 'e-resize';
     }
 
-    if (total < containerSize) {
-      views.forEach((view) => {
-        if (!view.visible) return;
-        const ratioSize = view.size * (containerSize / total);
-        view.size = ratioSize < view.minSize ? view.minSize : ratioSize;
-      });
+    if (position + size === maxPosition + this.minSize) {
+      return this._direction === 'horizontal' ? 'n-resize' : 'w-resize';
     }
 
-    return views;
+    return this._direction === 'horizontal' ? 'row-resize' : 'col-resize';
   }
 
-  private _readjustPosition(views: IView[]) {
-    return views.reduce(
-      (result, view, index) => {
-        if (index === views.length - 1) return result;
-        return result.concat(view.visible ? result[index] + view.size : result[index]);
-      },
-      [0]
-    );
+  public get size() {
+    return this._size;
   }
 
-  // private _resizeHandler(index: number) {
-  //   const handler = (event: MouseEvent) => {
-  //     const p = this._direction === 'horizontal' ? event.clientX : event.clientY;
-  //     const target = this.getViewControl(index);
+  public get position() {
+    return this._position;
+  }
 
-  //     const onDocumentMouseMove = (docEvent: MouseEvent) => {
-  //       const dp = (this._direction === 'horizontal' ? docEvent.clientX : docEvent.clientY) - p;
-  //       const targetSize = target.size.get();
-  //       if (targetSize - dp < target.minSize) {
-  //         target.size.set(target.minSize);
-  //       }
-  //     };
-  //   };
+  public get direction() {
+    return this._direction;
+  }
 
-  //   return handler;
-  // }
+  public get visible() {
+    return this._visible;
+  }
+
+  public get cachedSize() {
+    return this._cachedSize;
+  }
+
+  public get resizeHandler() {
+    return this._resizeHandler;
+  }
+
+  public saveCachedSize() {
+    this._cachedSize = this.size.get();
+  }
+
+  public get resizable() {
+    return !this._isLastView && this.visible;
+  }
+
+  public get sashCursor() {
+    return this._sashCursor;
+  }
 
   public destroy() {
-    this._containerResizeObserver.disconnect();
+    this._position.destroy();
+    this._size.destroy();
+    this._sashCursor.destroy();
   }
 }
 

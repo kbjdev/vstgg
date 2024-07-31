@@ -28,8 +28,8 @@ const preview: Preview = {
   },
   decorators: [
     withThemeFromJSXProvider({
-      themes: { light, dark },
-      defaultTheme: 'dark',
+      themes: { [darkThemeJson.name]: dark, [lightThemeJson.name]: light },
+      defaultTheme: darkThemeJson.name,
       GlobalStyles,
       Provider: ThemeProvider,
     }),

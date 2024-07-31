@@ -14,6 +14,7 @@ const BaseButton = styled.button`
   justify-content: center;
   height: 100%;
   background-color: ${({ theme }) => theme.colors['button.background']};
+  cursor: pointer;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors['button.hoverBackground']};

@@ -1,7 +1,7 @@
-import { FC, PropsWithChildren } from 'react';
+import { FC, MouseEventHandler, PropsWithChildren } from 'react';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
-import ViewControl from '@src/renderer/libs/view/viewControl';
+import SplitViewControl from '@src/renderer/libs/view/splitViewControl';
 
 const Container = styled(motion.div)`
   position: absolute;
@@ -9,21 +9,30 @@ const Container = styled(motion.div)`
   left: 0;
 `;
 
-const ResizeArea = styled.div<{ $direction: ViewControl['direction'] }>`
+const Sash = styled(motion.div)<{ $direction: SplitViewControl['direction'] }>`
   position: absolute;
   top: ${({ $direction }) => ($direction === 'horizontal' ? 'auto' : 0)};
   bottom: ${({ $direction }) => ($direction === 'horizontal' ? 0 : 'auto')};
   right: ${({ $direction }) => ($direction === 'horizontal' ? 'auto' : 0)};
   width: ${({ $direction }) => ($direction === 'horizontal' ? '100%' : '4px')};
   height: ${({ $direction }) => ($direction === 'horizontal' ? '4px' : '100%')};
-  background-color: cadetblue;
+  &:hover,
+  &:active {
+    background-color: ${({ theme }) => theme.colors['sash.hoverBorder']};
+  }
+
+  transition: background-color 0.1s ease-out;
 `;
 
 interface ISplitViewItemProps {
-  control: ViewControl;
+  control: SplitViewControl;
 }
 
 const SplitViewItem: FC<PropsWithChildren<ISplitViewItemProps>> = ({ children, control }) => {
+  const onMouseDown: MouseEventHandler<HTMLDivElement> = (event) => {
+    control.resizeHandler(event as unknown as MouseEvent);
+  };
+
   return (
     <Container
       style={{
@@ -34,7 +43,13 @@ const SplitViewItem: FC<PropsWithChildren<ISplitViewItemProps>> = ({ children, c
       }}
     >
       {children}
-      {control.resizable && <ResizeArea $direction={control.direction} />}
+      {control.resizable && (
+        <Sash
+          style={{ cursor: control.sashCursor }}
+          $direction={control.direction}
+          onMouseDown={onMouseDown}
+        />
+      )}
     </Container>
   );
 };
