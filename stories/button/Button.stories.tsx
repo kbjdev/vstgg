@@ -1,12 +1,12 @@
 import Button from '@src/renderer/components/vs/button/Button';
 import { Meta, StoryObj } from '@storybook/react/*';
 import CheckIcon from '@resources/icons/check.svg?react';
-import StoryComponentFrame from '../ComponentFrame';
+import StoryComponentFrame from '../_accessories/ComponentFrame';
 
 type Story = StoryObj<typeof Button>;
 
 const meta: Meta<typeof Button> = {
-  title: 'button/Button',
+  title: 'components/Button/Button',
   tags: ['autodocs'],
   argTypes: {
     onDropdownClick: {

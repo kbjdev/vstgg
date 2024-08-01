@@ -1,11 +1,11 @@
 import ExtensionButton from '@src/renderer/components/vs/button/ExtensionButton';
 import { Meta, StoryObj } from '@storybook/react/*';
-import StoryComponentFrame from '../ComponentFrame';
+import StoryComponentFrame from '../_accessories/ComponentFrame';
 
 type Story = StoryObj<typeof ExtensionButton>;
 
 const meta: Meta<typeof ExtensionButton> = {
-  title: 'button/ExtensionButton',
+  title: 'components/Button/ExtensionButton',
   tags: ['autodocs'],
   argTypes: {
     onDropdownClick: {

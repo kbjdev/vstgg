@@ -2,12 +2,12 @@ import ToolbarIconButton from '@src/renderer/components/vs/button/ToolbarIconBut
 import { Meta, StoryObj } from '@storybook/react/*';
 import EllipsisIcon from '@resources/icons/ellipsis.svg?react';
 import TerminalIcon from '@resources/icons/terminal.svg?react';
-import StoryComponentFrame from '../ComponentFrame';
+import StoryComponentFrame from '../_accessories/ComponentFrame';
 
 type Story = StoryObj<typeof ToolbarIconButton>;
 
 const meta: Meta<typeof ToolbarIconButton> = {
-  title: 'button/ToolbarIconButton',
+  title: 'components/Button/ToolbarIconButton',
   tags: ['autodocs'],
   argTypes: {
     label: { control: 'text', type: 'string', table: { defaultValue: { summary: 'undefined' } } },

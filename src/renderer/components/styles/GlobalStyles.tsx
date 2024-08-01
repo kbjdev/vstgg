@@ -25,7 +25,7 @@ time, mark, audio, video {
 	padding: 0;
 	border: 0;
 	font-size: 100%;
-	font: inherit;
+	/* font: inherit; */
 	vertical-align: baseline;
 }
 
@@ -62,8 +62,7 @@ table {
 /* <---------- DEFAULT CSS ----------> */
 * {
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-  Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* disable scroll bar */
   &::-webkit-scrollbar {

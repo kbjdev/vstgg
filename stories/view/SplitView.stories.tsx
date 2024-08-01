@@ -1,13 +1,13 @@
 import { Meta, StoryObj } from '@storybook/react/*';
-import StoryComponentFrame from '../ComponentFrame';
+import StoryComponentFrame from '../_accessories/ComponentFrame';
 import SplitView from '@src/renderer/components/vs/view/SplitView';
-import StoryBox from '../StoryBox';
-import StoryText from '../StoryText';
+import StoryBox from '../_accessories/StoryBox';
+import StoryText from '../_accessories/StoryText';
 
 type Story = StoryObj<typeof SplitView>;
 
 const meta: Meta<typeof SplitView> = {
-  title: 'layout/SplitView',
+  title: 'components/View/SplitView',
   tags: ['autodocs'],
   argTypes: {
     views: {
