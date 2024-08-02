@@ -4,6 +4,7 @@ interface ISplitViewControlOptions {
   position: number;
   size: number;
   minSize: number;
+  snap: boolean;
   minPosition: number;
   maxPosition: number;
   visible: boolean;
@@ -16,21 +17,21 @@ class SplitViewControl {
   private _position: MotionValue<number>;
   private _size: MotionValue<number>;
   private _sashCursor: MotionValue<string>;
-  private _visible: boolean;
-  private _cachedSize?: number;
+  private _cachedSize: number;
   private _direction: 'horizontal' | 'vertical';
   private _resizeHandler: (event: MouseEvent) => void;
   private _isLastView: boolean;
   public readonly minSize: number;
+  public readonly snap: boolean;
   public constructor(options: ISplitViewControlOptions) {
     this._position = motionValue(options.position);
-    this._size = motionValue(options.size);
-    this._visible = options.visible;
+    this._size = motionValue(options.visible ? options.size : 0);
     this._cachedSize = options.size;
     this._direction = options.direction;
     this._resizeHandler = options.resizeHandler;
     this._isLastView = options.isLastView;
     this.minSize = options.minSize;
+    this.snap = options.snap;
     this._sashCursor = motionValue(this._getSashCursor(options.minPosition, options.maxPosition));
 
     this._position.on('change', () => {
@@ -43,7 +44,7 @@ class SplitViewControl {
   }
 
   private _getSashCursor(minPosition: number, maxPosition: number) {
-    // TODO CAN'T TRUST
+    // TODO (TEMP)CAN'T TRUST
     const toTrustNumber = (num: number) => {
       return Math.floor(num * Math.pow(10, 2)) / Math.pow(10, 2);
     };
@@ -61,6 +62,16 @@ class SplitViewControl {
     return this._direction === 'horizontal' ? 'row-resize' : 'col-resize';
   }
 
+  public addEventListener(eventType: 'visible', callback: (visible: boolean) => void) {
+    this._size.on('change', (v) => {
+      const prev = !!this._size.getPrevious();
+      const next = !!v;
+      if (prev !== next) {
+        callback(next);
+      }
+    });
+  }
+
   public get size() {
     return this._size;
   }
@@ -74,7 +85,7 @@ class SplitViewControl {
   }
 
   public get visible() {
-    return this._visible;
+    return !!this._size.get();
   }
 
   public get cachedSize() {

@@ -34,6 +34,7 @@ const preview: Preview = {
       Provider: ThemeProvider,
     }),
   ],
+  tags: ['autodocs'],
 };
 
 export default preview;

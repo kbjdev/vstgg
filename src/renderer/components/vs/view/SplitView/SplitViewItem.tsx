@@ -42,7 +42,7 @@ const SplitViewItem: FC<PropsWithChildren<ISplitViewItemProps>> = ({ children, c
         height: control.direction === 'horizontal' ? control.size : '100%',
       }}
     >
-      {children}
+      <div style={{ overflow: 'hidden', width: '100%', height: '100%' }}>{children}</div>
       {control.resizable && (
         <Sash
           style={{ cursor: control.sashCursor }}
