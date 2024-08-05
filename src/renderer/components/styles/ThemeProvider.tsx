@@ -258,7 +258,7 @@ const light = {
 
 const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   const theme = useMemo(() => {
-    const colors = new ColorCollection().registerThemeColor(light).genrateThemeColors('dark');
+    const colors = new ColorCollection().registerThemeColor(dark).genrateThemeColors('dark');
     return { colors };
   }, []);
 
