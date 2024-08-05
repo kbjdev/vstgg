@@ -7,10 +7,11 @@ import ErrorIcon from '@resources/icons/error.svg?react';
 import InfoIcon from '@resources/icons/info.svg?react';
 import ListUnordered from '@resources/icons/list-unordered.svg?react';
 import QuestionIcon from '@resources/icons/question.svg?react';
+import RocketIcon from '@resources/icons/rocket.svg?react';
 import SourceControlIcon from '@resources/icons/source-control.svg?react';
 import SyncIcon from '@resources/icons/sync.svg?react';
 import WarningIcon from '@resources/icons/warning.svg?react';
-
+import { Color } from '@src/renderer/libs/vs/theme/color';
 import StatusBarItem from './StatusBarItem';
 import Tooltip from '../../tooltip/Tooltip';
 
@@ -24,7 +25,10 @@ const Container = styled.footer`
   height: 22px;
   padding-right: 10px;
   background-color: ${({ theme }) => theme.colors['statusBar.background']};
-  border-top: 1px solid ${({ theme }) => theme.colors['statusBar.border']};
+  border-top: ${({ theme }) =>
+    theme.colors['statusBar.border'] === Color.transparent.toString()
+      ? 'none'
+      : `1px solid ${theme.colors['statusBar.border']}`};
 `;
 
 const ItemWrapper = styled.div`
@@ -35,6 +39,9 @@ const ItemWrapper = styled.div`
 const StatusBar: FC = () => (
   <Container>
     <ItemWrapper>
+      <StatusBarItem isRemote>
+        <RocketIcon />
+      </StatusBarItem>
       <Tooltip position="n-left" withArrow content="Current Branch: main">
         <StatusBarItem>
           <SourceControlIcon />
